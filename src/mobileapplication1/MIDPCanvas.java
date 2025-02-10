@@ -31,12 +31,12 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
     };
     
     // Each element here represents a square on the grid
-    // Between 0 - 127 (full square) is the range of values, 100 being the tile is almost ready.
+    // Between 0 - 44 (full square) is the range of values, 44 being the tile is almost ready.
     // This will be painted on every paint and the values wll be managed by the music thread
-    // -- Possibly -- Values can go over 100 for overage (user is too slow) up to 200
+    // -- Possibly -- Values can go over 44 for overage (user is too slow) up to 100
     int currentGrid [][] =  {
-        {0, 0, 0},
-        {0, 0, 0},
+        {44, 0, 0},
+        {0, 30, 0},
         {0, 0, 0}
     };
     /**
@@ -79,14 +79,17 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         g.drawString("Sample Text", 0, 0, Graphics.TOP | Graphics.LEFT);
     }
     void drawSquare(Graphics g, int x, int y, int size, int color) {
+
         int precolor = g.getColor();
         if (color != -1) {
             g.setColor(color);
         }
-        int midpointx =  ((1 + x + 0) + (1 + x + 0 + 45))/2;
-        int midpointy = ((1 + y + 0) + (1 + y + 0 + 45))/2;
-        
-        g.fillRect( (midpointx - size/2) ,(midpointy - size/2), size, size);
+
+        int midpointx = x+23;
+        int midpointy = y+23;
+        int halfsize = size >> 1; // Effectively divides by two but faster
+                
+        g.fillRect( (midpointx - halfsize) ,(midpointy - halfsize), size, size);
         if (color != -1) {
             g.setColor(precolor);
         }
@@ -95,19 +98,32 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         int precolor = g.getColor();
         g.setColor(0xFFFFFF);
         
-        g.drawRect(initialWidth + 0, initialHeight + 0, 45, 45);
-        drawSquare(g, initialWidth + 0, initialHeight, 20, 0xFF0000);
-        g.drawRect(initialWidth + 50, initialHeight + 0, 45, 45);
-        g.drawRect(initialWidth + 100, initialHeight + 0, 45, 45);
-        
-        g.drawRect(initialWidth + 0, initialHeight + 50, 45, 45);
-        g.drawRect(initialWidth + 50, initialHeight + 50, 45, 45);
-        g.drawRect(initialWidth + 100, initialHeight + 50, 45, 45);
-        
-        g.drawRect(initialWidth + 0, initialHeight + 100, 45, 45);
-        g.drawRect(initialWidth + 50, initialHeight + 100, 45, 45);
-        g.drawRect(initialWidth + 100, initialHeight + 100, 45, 45);
-        g.setColor(precolor);
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                g.drawRect(initialWidth + (col * 50), initialHeight + (row * 50), 45, 45);
+            }
+        }
+        g.setColor(0xFF0000);
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col], -1);
+//                g.drawRect(, , 45, 45);
+            }
+        }
+    
+//        g.drawRect(initialWidth + 0, initialHeight + 0, 45, 45);
+////        drawSquare(g, initialWidth + 0, initialHeight, 20, 0xFF0000);
+//        g.drawRect(initialWidth + 50, initialHeight + 0, 45, 45);
+//        g.drawRect(initialWidth + 100, initialHeight + 0, 45, 45);
+//        
+//        g.drawRect(initialWidth + 0, initialHeight + 50, 45, 45);
+//        g.drawRect(initialWidth + 50, initialHeight + 50, 45, 45);
+//        g.drawRect(initialWidth + 100, initialHeight + 50, 45, 45);
+//        
+//        g.drawRect(initialWidth + 0, initialHeight + 100, 45, 45);
+//        g.drawRect(initialWidth + 50, initialHeight + 100, 45, 45);
+//        g.drawRect(initialWidth + 100, initialHeight + 100, 45, 45);
+//        g.setColor(precolor);
     }
     /**
      * Called when a key is pressed.
