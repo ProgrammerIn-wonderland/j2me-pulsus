@@ -11,7 +11,7 @@ import javax.microedition.lcdui.*;
 /**
  * @author alice
  */
-public class MIDPCanvas extends Canvas implements CommandListener {
+public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
     final public int TOP_LEFT = 49;
     final public int TOP_MIDDLE = 50;
     final public int TOP_RIGHT = 51;
@@ -24,6 +24,21 @@ public class MIDPCanvas extends Canvas implements CommandListener {
     Graphics graphics;
     int initialWidth;
     int initialHeight;
+    boolean keyStates[][] =  {
+        {false, false, false},
+        {false, false, false},
+        {false, false, false}
+    };
+    
+    // Each element here represents a square on the grid
+    // Between 0 - 127 (full square) is the range of values, 100 being the tile is almost ready.
+    // This will be painted on every paint and the values wll be managed by the music thread
+    // -- Possibly -- Values can go over 100 for overage (user is too slow) up to 200
+    int currentGrid [][] =  {
+        {0, 0, 0},
+        {0, 0, 0},
+        {0, 0, 0}
+    };
     /**
      * constructor
      */
@@ -33,6 +48,7 @@ public class MIDPCanvas extends Canvas implements CommandListener {
             setCommandListener(this);
             // Add the Exit command
             addCommand(new Command("Exit", Command.EXIT, 1));
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -42,6 +58,8 @@ public class MIDPCanvas extends Canvas implements CommandListener {
      * paint
      */
     public void paint(Graphics g) {
+        
+        this.graphics = g;
         g.setColor(0);
         
         
@@ -60,12 +78,25 @@ public class MIDPCanvas extends Canvas implements CommandListener {
         
         g.drawString("Sample Text", 0, 0, Graphics.TOP | Graphics.LEFT);
     }
-
+    void drawSquare(Graphics g, int x, int y, int size, int color) {
+        int precolor = g.getColor();
+        if (color != -1) {
+            g.setColor(color);
+        }
+        int midpointx =  ((1 + x + 0) + (1 + x + 0 + 45))/2;
+        int midpointy = ((1 + y + 0) + (1 + y + 0 + 45))/2;
+        
+        g.fillRect( (midpointx - size/2) ,(midpointy - size/2), size, size);
+        if (color != -1) {
+            g.setColor(precolor);
+        }
+    }
     void drawGrid(Graphics g) {
         int precolor = g.getColor();
         g.setColor(0xFFFFFF);
         
         g.drawRect(initialWidth + 0, initialHeight + 0, 45, 45);
+        drawSquare(g, initialWidth + 0, initialHeight, 20, 0xFF0000);
         g.drawRect(initialWidth + 50, initialHeight + 0, 45, 45);
         g.drawRect(initialWidth + 100, initialHeight + 0, 45, 45);
         
@@ -148,5 +179,15 @@ public class MIDPCanvas extends Canvas implements CommandListener {
      */
     public void commandAction(Command command, Displayable displayable) {
     }
-    
+    public void run() {
+        boolean isRunning = true;
+        while (isRunning) {
+            repaint(); // Ask the system to redraw the screen
+            try {
+                Thread.sleep(100); // Adjust polling rate (100ms)
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
