@@ -107,7 +107,13 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col], -1);
-//                g.drawRect(, , 45, 45);
+            }
+        }
+        g.setColor(0x0000FF);
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (keyStates[row][col])
+                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), 44, -1);
             }
         }
     
@@ -134,36 +140,75 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         System.out.println(graphics);
         this.graphics.setColor(0xFF0000);
         System.out.println(keyCode);
-        this.graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
+        // You probably think I'm stupid for not just calculating the index by 
+        // division but remember that like the majority of phones didn't even support
+        // division in hardware. I'm avoiding division like an elementary schooler - Rafflesia
         switch (keyCode) {
             case TOP_LEFT:
-                System.out.println("case hit");
-                graphics.fillRect(initialWidth + 1, initialHeight+1, 44, 44);
+                keyStates[0][0] = true;
                 break;
             case TOP_MIDDLE:
+                keyStates[0][1] = true;
                 break;
             case TOP_RIGHT:
+                keyStates[0][2] = true;
                 break;
             case MIDDLE_LEFT:
+                keyStates[1][0] = true;
                 break;
             case MIDDLE_MIDDLE:
+                keyStates[1][1] = true;
                 break;
             case MIDDLE_RIGHT:
+                keyStates[1][2] = true;
                 break;
             case BOTTOM_LEFT:
+                keyStates[2][0] = true;
                 break;
             case BOTTOM_MIDDLE:
+                keyStates[2][1] = true;
                 break;
             case BOTTOM_RIGHT:
+                keyStates[2][2] = true;
                 break;
         }
-        graphics.setColor(precolor);
+        this.repaint();
     }
 
     /**
      * Called when a key is released.
      */
     protected void keyReleased(int keyCode) {
+        switch (keyCode) {
+            case TOP_LEFT:
+                keyStates[0][0] = false;
+                break;
+            case TOP_MIDDLE:
+                keyStates[0][1] = false;
+                break;
+            case TOP_RIGHT:
+                keyStates[0][2] = false;
+                break;
+            case MIDDLE_LEFT:
+                keyStates[1][0] = false;
+                break;
+            case MIDDLE_MIDDLE:
+                keyStates[1][1] = false;
+                break;
+            case MIDDLE_RIGHT:
+                keyStates[1][2] = false;
+                break;
+            case BOTTOM_LEFT:
+                keyStates[2][0] = false;
+                break;
+            case BOTTOM_MIDDLE:
+                keyStates[2][1] = false;
+                break;
+            case BOTTOM_RIGHT:
+                keyStates[2][2] = false;
+                break;
+        }
+        repaint();
     }
 
     /**
