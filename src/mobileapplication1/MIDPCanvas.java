@@ -55,10 +55,6 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
 //            addCommand(new Command("Exit", Command.EXIT, 1));
             Thread runner = new Thread(this);
             runner.start();
-            Player musicPlayer = Manager.createPlayer("/audio.mp3");
-            musicPlayer.realize();
-            musicPlayer.prefetch();
-            musicPlayer.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
