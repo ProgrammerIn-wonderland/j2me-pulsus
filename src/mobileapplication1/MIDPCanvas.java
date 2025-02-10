@@ -5,7 +5,12 @@
  */
 package mobileapplication1;
 
+import java.io.IOException;
 import javax.microedition.lcdui.*;
+import javax.microedition.media.Manager;
+import javax.microedition.media.MediaException;
+import javax.microedition.media.Player;
+import javax.microedition.media.PlayerListener;
 
 
 /**
@@ -47,8 +52,13 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
             // Set up this canvas to listen to command events
             setCommandListener(this);
             // Add the Exit command
-            addCommand(new Command("Exit", Command.EXIT, 1));
-            
+//            addCommand(new Command("Exit", Command.EXIT, 1));
+            Thread runner = new Thread(this);
+            runner.start();
+            Player musicPlayer = Manager.createPlayer("/audio.mp3");
+            musicPlayer.realize();
+            musicPlayer.prefetch();
+            musicPlayer.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,7 +182,6 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
                 keyStates[2][2] = true;
                 break;
         }
-        this.repaint();
     }
 
     /**
@@ -208,7 +217,6 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
                 keyStates[2][2] = false;
                 break;
         }
-        repaint();
     }
 
     /**
@@ -241,11 +249,12 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
     public void commandAction(Command command, Displayable displayable) {
     }
     public void run() {
+
         boolean isRunning = true;
         while (isRunning) {
             repaint(); // Ask the system to redraw the screen
             try {
-                Thread.sleep(100); // Adjust polling rate (100ms)
+                Thread.sleep(16); // Adjust polling rate (16ms)
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
