@@ -65,10 +65,12 @@ public class NoteLoader {
   
             String line;
             while ((line = readLine(isr)) != null) {
+                System.out.println(line);
                 String[] parts = split(line, ',');
                 int time = Integer.parseInt(parts[0]);
+                int startTime = time - 44000;
                 int lane = Integer.parseInt(parts[1]);
-                notes.addElement(new Note(time, lane));
+                notes.addElement(new Note(startTime, time, lane));
             }
             isr.close();
         } catch (Exception e) {
