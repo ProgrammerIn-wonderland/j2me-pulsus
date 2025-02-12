@@ -5,10 +5,13 @@
  */
 package mobileapplication1;
 
+import java.io.InputStream;
 import javax.microedition.midlet.*;
 
 import javax.microedition.lcdui.*;
 import javax.microedition.lcdui.game.*;
+import javax.microedition.media.Manager;
+import javax.microedition.media.Player;
 
 /**
  * @author alice
@@ -16,24 +19,18 @@ import javax.microedition.lcdui.game.*;
 public class Midlet extends MIDlet {
     private Command back;
     private Display display;
-
+    private Player player;
+    
     public void startApp() {
         back = new Command("Back", Command.BACK, 0);
         MIDPCanvas canvas = new MIDPCanvas();
-//        game.start();
-//        game.addCommand(back);
-//        game.setCommandListener(new CommandListener(){
-//        public void commandAction(Command c, Displayable s) {
-//        game.stop();
-//        notifyDestroyed();
-//        }
-//        });
         display = Display.getDisplay(this);
         display.setCurrent(canvas);  
     }
     
     public void pauseApp() {
     }
+
     
     public void destroyApp(boolean unconditional) {
     }

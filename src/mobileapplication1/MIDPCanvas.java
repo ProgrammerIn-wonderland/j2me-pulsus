@@ -6,6 +6,7 @@
 package mobileapplication1;
 
 import java.io.IOException;
+import java.io.InputStream;
 import javax.microedition.lcdui.*;
 import javax.microedition.media.Manager;
 import javax.microedition.media.MediaException;
@@ -35,6 +36,8 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         {false, false, false}
     };
     
+    
+    
     // Each element here represents a square on the grid
     // Between 0 - 44 (full square) is the range of values, 44 being the tile is almost ready.
     // This will be painted on every paint and the values wll be managed by the music thread
@@ -44,6 +47,7 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         {0, 30, 0},
         {0, 0, 0}
     };
+    Player player;
     /**
      * constructor
      */
@@ -51,15 +55,31 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         try {
             // Set up this canvas to listen to command events
             setCommandListener(this);
+            
+            initialHeight = (((this.getHeight() - 145 )/ 2) );
+            initialWidth =  (((this.getWidth() - 145 )/ 2));
+            
             // Add the Exit command
-//            addCommand(new Command("Exit", Command.EXIT, 1));
+            // addCommand(new Command("Exit", Command.EXIT, 1));
+            playMusic("/music.wav");
             Thread runner = new Thread(this);
             runner.start();
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
+    private void playMusic(String path) {
+        try {
+            InputStream is = getClass().getResourceAsStream(path);
+            player = Manager.createPlayer(is, "audio/x-wav"); // Use "audio/x-wav" for WAV files
+            player.realize();
+            player.prefetch();
+            player.start();  // Play the music
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * paint
      */
@@ -73,8 +93,7 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
 //        g.drawImage(img, UP, UP, RIGHT);
         
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        initialHeight = (((this.getHeight() - 145 )/ 2) );
-        initialWidth =  (((this.getWidth() - 145 )/ 2));
+
         drawGrid(g);
         g.setColor(0xFF0000);
 //        System.out.println(keyCode);
@@ -250,6 +269,7 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         while (isRunning) {
             repaint(); // Ask the system to redraw the screen
             try {
+                System.out.println("Current Time: " + ((player.getMediaTime() * 0x418937L) >>> 32));
                 Thread.sleep(16); // Adjust polling rate (16ms)
             } catch (InterruptedException e) {
                 e.printStackTrace();
