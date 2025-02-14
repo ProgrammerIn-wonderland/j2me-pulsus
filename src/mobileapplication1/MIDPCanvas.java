@@ -49,6 +49,7 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         {0, 0, 0}
     };
     Player player;
+    long millioffset = 0;
     /**
      * constructor
      */
@@ -63,6 +64,7 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
             // Add the Exit command
             // addCommand(new Command("Exit", Command.EXIT, 1));
             playMusic("/music.wav");
+            millioffset = System.currentTimeMillis();
             Thread runner = new Thread(this);
             runner.start();
             notes = (new NoteLoader()).loadNotes("/default_chart.txt");
@@ -98,11 +100,9 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
 
         drawGrid(g);
         g.setColor(0xFF0000);
-//        System.out.println(keyCode);
-//        g.fillRect(initialWidth + 1, initialHeight+1, 44, 44);
-//        graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
-        
-        long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);
+
+//        long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);
+        long currentTime = ((System.currentTimeMillis() - millioffset));
         g.drawString(Long.toString(currentTime), 0, 0, Graphics.TOP | Graphics.LEFT);
     }
     void drawSquare(Graphics g, int x, int y, int size, int color) {
@@ -143,20 +143,6 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
                     drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), 44, -1);
             }
         }
-    
-//        g.drawRect(initialWidth + 0, initialHeight + 0, 45, 45);
-////        drawSquare(g, initialWidth + 0, initialHeight, 20, 0xFF0000);
-//        g.drawRect(initialWidth + 50, initialHeight + 0, 45, 45);
-//        g.drawRect(initialWidth + 100, initialHeight + 0, 45, 45);
-//        
-//        g.drawRect(initialWidth + 0, initialHeight + 50, 45, 45);
-//        g.drawRect(initialWidth + 50, initialHeight + 50, 45, 45);
-//        g.drawRect(initialWidth + 100, initialHeight + 50, 45, 45);
-//        
-//        g.drawRect(initialWidth + 0, initialHeight + 100, 45, 45);
-//        g.drawRect(initialWidth + 50, initialHeight + 100, 45, 45);
-//        g.drawRect(initialWidth + 100, initialHeight + 100, 45, 45);
-//        g.setColor(precolor);
     }
     /**
      * Called when a key is pressed.
@@ -166,30 +152,39 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         // division but remember that like the majority of phones didn't even support
         // division in hardware. I'm avoiding division like an elementary schooler - Rafflesia
         switch (keyCode) {
+            case 114:
             case TOP_LEFT:
                 keyStates[0][0] = true;
                 break;
+            case 116:
             case TOP_MIDDLE:
                 keyStates[0][1] = true;
                 break;
+            case 121:
             case TOP_RIGHT:
                 keyStates[0][2] = true;
                 break;
+            case 102:
             case MIDDLE_LEFT:
                 keyStates[1][0] = true;
                 break;
+            case 103:
             case MIDDLE_MIDDLE:
                 keyStates[1][1] = true;
                 break;
+            case 104:
             case MIDDLE_RIGHT:
                 keyStates[1][2] = true;
                 break;
+            case 99:
             case BOTTOM_LEFT:
                 keyStates[2][0] = true;
                 break;
+            case 118:
             case BOTTOM_MIDDLE:
                 keyStates[2][1] = true;
                 break;
+            case 98:
             case BOTTOM_RIGHT:
                 keyStates[2][2] = true;
                 break;
@@ -200,31 +195,41 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
      * Called when a key is released.
      */
     protected void keyReleased(int keyCode) {
+        
         switch (keyCode) {
+            case 114:
             case TOP_LEFT:
                 keyStates[0][0] = false;
                 break;
+            case 116:
             case TOP_MIDDLE:
                 keyStates[0][1] = false;
                 break;
+            case 121:
             case TOP_RIGHT:
                 keyStates[0][2] = false;
                 break;
+            case 102:
             case MIDDLE_LEFT:
                 keyStates[1][0] = false;
                 break;
+            case 103:
             case MIDDLE_MIDDLE:
                 keyStates[1][1] = false;
                 break;
+            case 104:
             case MIDDLE_RIGHT:
                 keyStates[1][2] = false;
                 break;
+            case 99:
             case BOTTOM_LEFT:
                 keyStates[2][0] = false;
                 break;
+            case 118:
             case BOTTOM_MIDDLE:
                 keyStates[2][1] = false;
                 break;
+            case 98:
             case BOTTOM_RIGHT:
                 keyStates[2][2] = false;
                 break;
@@ -265,25 +270,33 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         
     }
     public void run() {
-
         boolean isRunning = true;
         while (isRunning) {
             repaint(); // Ask the system to redraw the screen
             try {
                 int starteri = 0;
-//                System.out.println(notes.size());
-//                System.out.println("Current Time: " + ();
-                long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);
+
+                // Uncomment this line if your device supports accurate media time
+//                long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);
+
+                // Comment this section out if your device supports accurate media time
+                long currentTime = ((System.currentTimeMillis() - millioffset)); // This is a totally inferior method of measuring time but is required on blackberries
+                
+                // Fixer for when the manual time measurement gets offcourse
+                // -- We still need a seperate one for buffering/audiolag - Rafflesia
+                long computedFixer = ((player.getMediaTime() * 0x418937L) >>> 32);
+                if (currentTime < computedFixer) {
+                    millioffset = System.currentTimeMillis() - computedFixer;
+                    currentTime = computedFixer;
+                }
+                
+                // End of comment this section out if your device supports accurate media time 
                 for (int i = starteri; i < notes.size(); i++) {
                     int lastoobi = 0;
                     Note note = (Note) notes.elementAt(i);
-                    System.out.println("Got note for time " + note.startTime + " but we are currently " + currentTime);
                     if (note.startTime < currentTime && currentTime < note.time) {
-                        System.out.println("reading note for x:" + note.gridX + " y:" + note.gridY + " time: " + currentTime);
                         currentGrid[note.gridX][note.gridY] = (int) ( ((44 * (currentTime - note.startTime)) / (note.time - note.startTime)));
-                        System.out.println("put " + currentGrid[note.gridX][note.gridY]);
                     } else if (note.startTime > currentTime) {
-                        System.out.println("Too far behind");
                         break;
                     } else if (note.time < currentTime) {
                         lastoobi = i;
