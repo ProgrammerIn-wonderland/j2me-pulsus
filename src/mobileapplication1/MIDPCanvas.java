@@ -121,6 +121,13 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
             g.setColor(precolor);
         }
     }
+    void resetGrid() {
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                currentGrid[row][col] = 0;
+            }
+        }
+    }
     void drawGrid(Graphics g) {
         int precolor = g.getColor();
         g.setColor(0xFFFFFF);
@@ -289,7 +296,7 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
                     millioffset = System.currentTimeMillis() - computedFixer;
                     currentTime = computedFixer;
                 }
-                
+                resetGrid();
                 // End of comment this section out if your device supports accurate media time 
                 for (int i = starteri; i < notes.size(); i++) {
                     int lastoobi = 0;

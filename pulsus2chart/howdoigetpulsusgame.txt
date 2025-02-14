@@ -1,0 +1,2 @@
+Open dev tools to websocket connection, load pulsus, refresh if you dont see any connection
+Download any map, you're looking from a message from the server called "newGrabbedLevel". The second argument of that is what pulsusgame.json is
