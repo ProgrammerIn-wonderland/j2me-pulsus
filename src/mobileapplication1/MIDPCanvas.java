@@ -102,8 +102,8 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
 //        g.fillRect(initialWidth + 1, initialHeight+1, 44, 44);
 //        graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
         
-        
-        g.drawString("Sample Text", 0, 0, Graphics.TOP | Graphics.LEFT);
+        long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);
+        g.drawString(Long.toString(currentTime), 0, 0, Graphics.TOP | Graphics.LEFT);
     }
     void drawSquare(Graphics g, int x, int y, int size, int color) {
 
