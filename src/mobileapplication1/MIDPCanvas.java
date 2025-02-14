@@ -283,15 +283,15 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
     public void commandAction(Command command, Displayable displayable) {
     }
     public void processUpComingNotes() {
-        
-    }
+            }
+    long lastMilisecond = 0;
     public void run() {
         boolean isRunning = true;
         while (isRunning) {
             repaint(); // Ask the system to redraw the screen
             try {
                 int starteri = 0;
-
+                
                 // Uncomment this line if your device supports accurate media time
 //                long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);
 
@@ -299,12 +299,16 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
                 long currentTime = ((System.currentTimeMillis() - millioffset)); // This is a totally inferior method of measuring time but is required on blackberries
                 
                 // Fixer for when the manual time measurement gets offcourse
-                // -- We still need a seperate one for buffering/audiolag - Rafflesia
-                long computedFixer = ((player.getMediaTime() * 0x418937L) >>> 32);
+                long computedFixer = (((player.getMediaTime() + 1) * 0x418937L) >>> 32);
                 if (currentTime < computedFixer) {
                     millioffset = System.currentTimeMillis() - computedFixer;
                     currentTime = computedFixer;
                 }
+                
+                if ((lastMilisecond - computedFixer == 1000)) {
+                    millioffset = System.currentTimeMillis() - computedFixer;
+                }
+                lastMilisecond = computedFixer;
                 resetGrid();
                 // End of comment this section out if your device supports accurate media time 
                 for (int i = starteri; i < notes.size(); i++) {
