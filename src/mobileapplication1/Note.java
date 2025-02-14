@@ -19,7 +19,7 @@ class Note {
     Note(long startTime, long time, int lane) {
         this.time = time;
         this.lane = lane;
-        this.startTime = time - 4000;
+        this.startTime = startTime;
         System.out.println(lane);
         gridX = (short) ((lane - 1)/3);
         gridY = (short) ((lane - 1)%3);
