@@ -13,6 +13,7 @@ class Note {
     long time;  // Time in milliseconds
     int lane;  // Grid tile (1 - 9)
     long startTime; // when we start the note
+    long safetyTime;
     short gridX;
     short gridY;
     
@@ -20,6 +21,7 @@ class Note {
         this.time = time;
         this.lane = lane;
         this.startTime = startTime;
+        safetyTime = time + 200;
         System.out.println(lane);
         gridX = (short) ((lane - 1)/3);
         gridY = (short) ((lane - 1)%3);

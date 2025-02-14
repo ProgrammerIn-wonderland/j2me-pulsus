@@ -140,9 +140,18 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         g.setColor(0xFF0000);
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col], -1);
+                if (currentGrid[row][col] > 0)
+                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col], -1);
             }
         }
+        g.setColor(0xFF00FF);
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (currentGrid[row][col] < 0)
+                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), 44+currentGrid[row][col], -1);
+            }
+        }
+        
         g.setColor(0x0000FF);
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
@@ -301,8 +310,12 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
                 for (int i = starteri; i < notes.size(); i++) {
                     int lastoobi = 0;
                     Note note = (Note) notes.elementAt(i);
-                    if (note.startTime < currentTime && currentTime < note.time) {
-                        currentGrid[note.gridX][note.gridY] = (int) ( ((44 * (currentTime - note.startTime)) / (note.time - note.startTime)));
+                    if (note.startTime < currentTime && currentTime < note.safetyTime) {
+                        if (currentTime < note.time) {
+                            currentGrid[note.gridX][note.gridY] = (int) ( ((44 * (currentTime - note.startTime)) / (note.time - note.startTime)));
+                        } else {
+                            currentGrid[note.gridX][note.gridY] = (int) -( ((44 * (currentTime - note.time)) / (note.safetyTime - note.time)));
+                        }
                     } else if (note.startTime > currentTime) {
                         break;
                     } else if (note.time < currentTime) {
