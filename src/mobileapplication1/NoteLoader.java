@@ -44,7 +44,10 @@ public class NoteLoader {
     private static String readLine(InputStreamReader isr) throws IOException {
         StringBuffer fileContentBuffer = new StringBuffer();
         char c = (char) isr.read();
-        while ((int)c != -1 && c != '\n') {
+        System.out.println("Beginning readthing");
+        while ((int)c != -1 && c != '\n' && (int)c != 65535) {
+//            System.out.println("Reading: ");
+//            System.out.println((int)c);
             fileContentBuffer.append(c);
             c = (char) isr.read();
         }
@@ -64,14 +67,15 @@ public class NoteLoader {
             InputStreamReader isr = (new InputStreamReader(is));
   
             String line;
-            while ((line = readLine(isr)) != null) {
+            while (!"".equals(line = readLine(isr))) {
                 System.out.println(line);
                 String[] parts = split(line, ',');
-                int time = Integer.parseInt(parts[0]);
-                int startTime = time - 44000;
-                int lane = Integer.parseInt(parts[1]);
+                long startTime = Long.parseLong(parts[0]);
+                long time = Long.parseLong(parts[1]);
+                int lane = Integer.parseInt(parts[2]);
                 notes.addElement(new Note(startTime, time, lane));
             }
+            System.out.println("done");
             isr.close();
         } catch (Exception e) {
             e.printStackTrace();

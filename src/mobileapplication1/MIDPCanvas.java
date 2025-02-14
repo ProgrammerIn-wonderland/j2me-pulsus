@@ -7,6 +7,7 @@ package mobileapplication1;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Vector;
 import javax.microedition.lcdui.*;
 import javax.microedition.media.Manager;
 import javax.microedition.media.MediaException;
@@ -35,7 +36,7 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
         {false, false, false},
         {false, false, false}
     };
-    
+    Vector notes = new Vector();
     
     
     // Each element here represents a square on the grid
@@ -64,6 +65,7 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
             playMusic("/music.wav");
             Thread runner = new Thread(this);
             runner.start();
+            notes = (new NoteLoader()).loadNotes("/default_chart.txt");
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -160,11 +162,6 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
      * Called when a key is pressed.
      */
     protected void keyPressed(int keyCode) {
-        // Broken, apparently you cant just pass reference of the graphics object like this, you have to set some variables and then repaint
-        int precolor = graphics.getColor();
-        System.out.println(graphics);
-        this.graphics.setColor(0xFF0000);
-        System.out.println(keyCode);
         // You probably think I'm stupid for not just calculating the index by 
         // division but remember that like the majority of phones didn't even support
         // division in hardware. I'm avoiding division like an elementary schooler - Rafflesia
@@ -238,6 +235,7 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
      * Called when a key is repeated (held down).
      */
     protected void keyRepeated(int keyCode) {
+        
     }
 
     /**
@@ -263,13 +261,35 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
      */
     public void commandAction(Command command, Displayable displayable) {
     }
+    public void processUpComingNotes() {
+        
+    }
     public void run() {
 
         boolean isRunning = true;
         while (isRunning) {
             repaint(); // Ask the system to redraw the screen
             try {
-                System.out.println("Current Time: " + ((player.getMediaTime() * 0x418937L) >>> 32));
+                int starteri = 0;
+//                System.out.println(notes.size());
+//                System.out.println("Current Time: " + ();
+                long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);
+                for (int i = starteri; i < notes.size(); i++) {
+                    int lastoobi = 0;
+                    Note note = (Note) notes.elementAt(i);
+                    System.out.println("Got note for time " + note.startTime + " but we are currently " + currentTime);
+                    if (note.startTime < currentTime && currentTime < note.time) {
+                        System.out.println("reading note for x:" + note.gridX + " y:" + note.gridY + " time: " + currentTime);
+                        currentGrid[note.gridX][note.gridY] = (int) ( ((44 * (currentTime - note.startTime)) / (note.time - note.startTime)));
+                        System.out.println("put " + currentGrid[note.gridX][note.gridY]);
+                    } else if (note.startTime > currentTime) {
+                        System.out.println("Too far behind");
+                        break;
+                    } else if (note.time < currentTime) {
+                        lastoobi = i;
+                    } // Work in progress optimization
+                    starteri = lastoobi;
+                }
                 Thread.sleep(16); // Adjust polling rate (16ms)
             } catch (InterruptedException e) {
                 e.printStackTrace();
