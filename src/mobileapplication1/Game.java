@@ -50,11 +50,13 @@ public class Game extends Canvas implements CommandListener, Runnable {
     };
     Player player;
     long millioffset = 0;
+    Image bg;
     /**
      * constructor
      */
-    public Game() {
+    public Game(Image bg) {
         try {
+            this.bg = bg;
             // Set up this canvas to listen to command events
             setCommandListener(this);
             
@@ -89,14 +91,11 @@ public class Game extends Canvas implements CommandListener, Runnable {
      */
     public void paint(Graphics g) {
         
+        
         this.graphics = g;
         g.setColor(0);
         
-        
-//        new Image()
-//        g.drawImage(img, UP, UP, RIGHT);
-        
-        g.fillRect(0, 0, this.getWidth(), this.getHeight());
+        g.drawImage(bg, 0, 0, 0);
 
         drawGrid(g);
         g.setColor(0xFF0000);
@@ -282,8 +281,7 @@ public class Game extends Canvas implements CommandListener, Runnable {
      */
     public void commandAction(Command command, Displayable displayable) {
     }
-    public void processUpComingNotes() {
-            }
+
     long lastMilisecond = 0;
     public void run() {
         boolean isRunning = true;
