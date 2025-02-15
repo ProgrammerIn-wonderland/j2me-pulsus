@@ -18,7 +18,7 @@ import javax.microedition.media.PlayerListener;
 /**
  * @author alice
  */
-public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
+public class Game extends Canvas implements CommandListener, Runnable {
     final public int TOP_LEFT = 49;
     final public int TOP_MIDDLE = 50;
     final public int TOP_RIGHT = 51;
@@ -53,7 +53,7 @@ public class MIDPCanvas extends Canvas implements CommandListener, Runnable {
     /**
      * constructor
      */
-    public MIDPCanvas() {
+    public Game() {
         try {
             // Set up this canvas to listen to command events
             setCommandListener(this);

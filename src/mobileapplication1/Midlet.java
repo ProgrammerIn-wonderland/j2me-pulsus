@@ -23,8 +23,8 @@ public class Midlet extends MIDlet {
     
     public void startApp() {
         back = new Command("Back", Command.BACK, 0);
-        MIDPCanvas canvas = new MIDPCanvas();
         display = Display.getDisplay(this);
+        MenuCanvas canvas = new MenuCanvas(display);
         display.setCurrent(canvas);  
     }
     
