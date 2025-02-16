@@ -13,7 +13,7 @@ import javax.microedition.lcdui.*;
 /**
  * @author alice
  */
-public class MenuCanvas extends Canvas implements CommandListener {
+public class MenuCanvas extends Canvas implements CommandListener, Runnable {
     Display display;
     Image bgBlur;
     Image bg;
@@ -27,6 +27,7 @@ public class MenuCanvas extends Canvas implements CommandListener {
     boolean gameLoadAnimation = false;
     long stageOffset = 0;
     boolean loadGameNextFrame = false;
+    Thread runner;
     /**
      * constructor
      */
@@ -47,6 +48,8 @@ public class MenuCanvas extends Canvas implements CommandListener {
             addCommand(new Command("Exit", Command.EXIT, 1));
             milioffset = System.currentTimeMillis() + 1000;
             stageOffset = System.currentTimeMillis() + 1500;
+            runner = new Thread(this);
+            runner.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,7 +84,7 @@ public class MenuCanvas extends Canvas implements CommandListener {
         g.drawString("This is an early", x, y, Graphics.TOP | Graphics.LEFT);
         x = xScreenCenter - (defaultFont.stringWidth("development build") >>> 1) - offsetx;
         y = (yScreenCenter - (defaultFont.getHeight() >>> 1)) + (defaultFont.getHeight() >>> 2);
-        g.drawString("development build", x, y, Graphics.TOP | Graphics.LEFT);        
+        g.drawString("development build", x, y, Graphics.TOP | Graphics.LEFT);
         
         g.setColor(preColor);
     }
@@ -93,14 +96,18 @@ public class MenuCanvas extends Canvas implements CommandListener {
         g.fillRect(0, 0, this.getWidth(), this.getHeight()); // Draw that background 
         
         if (loadGameNextFrame) {
-            this.display.setCurrent(new Game(bgBlur));
-            return;
+            try {
+                runner.join();
+                this.display.setCurrent(new Game(bgBlur));
+                return;
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
         }
         
         if (!introAnimationDone) {
             g.drawImage(bgBlur, 0, 0, 0);
             drawDisclaimerText(g);
-            repaint();
             return;
         }
         
@@ -116,8 +123,6 @@ public class MenuCanvas extends Canvas implements CommandListener {
             g.drawImage(bg, 0, 0, 0);
         }
         
-        
-        repaint();
     }
     void drawGrid(Graphics g, float multiplier) {
         int precolor = g.getColor();
@@ -178,6 +183,12 @@ public class MenuCanvas extends Canvas implements CommandListener {
         if (command.getLabel().equals("DEBUG main game")) {
             gameLoadAnimation = true;
             stageOffset = System.currentTimeMillis();
+        }
+    }
+
+    public void run() {
+        while (!loadGameNextFrame) {
+            repaint();
         }
     }
     
