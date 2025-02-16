@@ -331,12 +331,13 @@ public class Game extends Canvas implements CommandListener, Runnable {
     }
 
     long lastMilisecond = 0;
+    int starteri = 0;
     public void run() {
         boolean isRunning = true;
         while (isRunning) {
             repaint(); // Ask the system to redraw the screen
             try {
-                int starteri = 0;
+                
                 
                 // Uncomment this line if your device supports accurate media time
 //                long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);

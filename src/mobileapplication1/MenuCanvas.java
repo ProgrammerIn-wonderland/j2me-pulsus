@@ -22,6 +22,11 @@ public class MenuCanvas extends Canvas implements CommandListener {
     Font defaultFont;
     long milioffset = Long.MAX_VALUE;
     boolean introAnimationDone = false;
+    int initialWidth;
+    int initialHeight;
+    boolean gameLoadAnimation = false;
+    long stageOffset = 0;
+    boolean loadGameNextFrame = false;
     /**
      * constructor
      */
@@ -30,6 +35,8 @@ public class MenuCanvas extends Canvas implements CommandListener {
             xScreenCenter = (getWidth() / 2);
             yScreenCenter = (getHeight() / 2);
             defaultFont = Font.getDefaultFont();
+            initialHeight = (((this.getHeight() - 145 )/ 2) );
+            initialWidth =  (((this.getWidth() - 145 )/ 2));
             this.display = display;
             this.bgBlur = Image.createImage(getClass().getResourceAsStream("/bg-blur.png"));
             this.bg = Image.createImage(getClass().getResourceAsStream("/bg.png"));
@@ -39,6 +46,7 @@ public class MenuCanvas extends Canvas implements CommandListener {
             addCommand(new Command("DEBUG main game", Command.OK, 0));
             addCommand(new Command("Exit", Command.EXIT, 1));
             milioffset = System.currentTimeMillis() + 1000;
+            stageOffset = System.currentTimeMillis() + 1500;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,15 +91,48 @@ public class MenuCanvas extends Canvas implements CommandListener {
     public void paint(Graphics g) {
         g.setColor(0x000000); // Set color black
         g.fillRect(0, 0, this.getWidth(), this.getHeight()); // Draw that background 
+        
+        if (loadGameNextFrame) {
+            this.display.setCurrent(new Game(bgBlur));
+            return;
+        }
+        
         if (!introAnimationDone) {
             g.drawImage(bgBlur, 0, 0, 0);
             drawDisclaimerText(g);
             repaint();
             return;
         }
-        g.drawImage(bg, 0, 0, 0);
-
+        
+        
+        if (gameLoadAnimation && System.currentTimeMillis() - stageOffset > 0) {
+            g.drawImage(bgBlur, 0, 0, 0);
+            drawGrid(g, (System.currentTimeMillis() - stageOffset)/1000f);
+            if ((System.currentTimeMillis() - stageOffset)/1000f > 1) {
+                loadGameNextFrame = true;
+            }
+            
+        } else {
+            g.drawImage(bg, 0, 0, 0);
+        }
+        
+        
         repaint();
+    }
+    void drawGrid(Graphics g, float multiplier) {
+        int precolor = g.getColor();
+        g.setColor(0xFFFFFF);
+        
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                int maxWidth = (initialWidth + (col * 50));
+                int minWidth = (this.getWidth() / 2 - 22);
+                int maxHeight = (initialHeight + (row * 50));
+                int minHeight = (this.getHeight()/ 2 - 22);
+                
+                g.drawRect((int)(multiplier * (maxWidth - minWidth) + minWidth), (int)(multiplier * (maxHeight - minHeight) + minHeight), 45, 45);
+            }
+        }
     }
 
     /**
@@ -135,7 +176,8 @@ public class MenuCanvas extends Canvas implements CommandListener {
      */
     public void commandAction(Command command, Displayable displayable) {
         if (command.getLabel().equals("DEBUG main game")) {
-            this.display.setCurrent(new Game(bgBlur));
+            gameLoadAnimation = true;
+            stageOffset = System.currentTimeMillis();
         }
     }
     
