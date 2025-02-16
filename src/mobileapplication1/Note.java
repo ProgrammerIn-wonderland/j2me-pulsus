@@ -22,7 +22,6 @@ class Note {
         this.lane = lane;
         this.startTime = startTime;
         safetyTime = time + 200;
-        System.out.println(lane);
         gridX = (short) ((lane - 1)/3);
         gridY = (short) ((lane - 1)%3);
         

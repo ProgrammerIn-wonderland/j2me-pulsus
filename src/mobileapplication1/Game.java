@@ -14,7 +14,6 @@ import javax.microedition.media.MediaException;
 import javax.microedition.media.Player;
 import javax.microedition.media.PlayerListener;
 
-
 /**
  * @author alice
  */
@@ -48,6 +47,19 @@ public class Game extends Canvas implements CommandListener, Runnable {
         {0, 30, 0},
         {0, 0, 0}
     };
+    int activeNote [][] =  {
+        {-1, -1, -1},
+        {-1, -1, -1},
+        {-1, -1, -1}
+    };
+    int lastClaimedNote [][] =  {
+        {-1, -1, -1},
+        {-1, -1, -1},
+        {-1, -1, -1}
+    };
+    
+    long score = 0;
+    
     Player player;
     long millioffset = 0;
     Image bg;
@@ -102,7 +114,7 @@ public class Game extends Canvas implements CommandListener, Runnable {
 
 //        long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);
         long currentTime = ((System.currentTimeMillis() - millioffset));
-        g.drawString(Long.toString(currentTime), 0, 0, Graphics.TOP | Graphics.LEFT);
+        g.drawString("Score: " + Long.toString(score), 0, 0, Graphics.TOP | Graphics.LEFT);
     }
     void drawSquare(Graphics g, int x, int y, int size, int color) {
 
@@ -124,6 +136,7 @@ public class Game extends Canvas implements CommandListener, Runnable {
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 currentGrid[row][col] = 0;
+                activeNote[row][col] = -1;
             }
         }
     }
@@ -166,44 +179,65 @@ public class Game extends Canvas implements CommandListener, Runnable {
         // You probably think I'm stupid for not just calculating the index by 
         // division but remember that like the majority of phones didn't even support
         // division in hardware. I'm avoiding division like an elementary schooler - Rafflesia
+        int x;
+        int y;
         switch (keyCode) {
             case 114:
             case TOP_LEFT:
-                keyStates[0][0] = true;
+                x = 0;
+                y = 0;
                 break;
             case 116:
             case TOP_MIDDLE:
-                keyStates[0][1] = true;
+                x = 1;
+                y = 0;
                 break;
             case 121:
             case TOP_RIGHT:
-                keyStates[0][2] = true;
+                x = 2;
+                y = 0;
                 break;
             case 102:
             case MIDDLE_LEFT:
-                keyStates[1][0] = true;
+                x = 0;
+                y = 1;
                 break;
             case 103:
             case MIDDLE_MIDDLE:
-                keyStates[1][1] = true;
+                x = 1;
+                y = 1;
                 break;
             case 104:
             case MIDDLE_RIGHT:
-                keyStates[1][2] = true;
+                x = 2;
+                y = 1;
                 break;
             case 99:
             case BOTTOM_LEFT:
-                keyStates[2][0] = true;
+                x = 0;
+                y = 2;
                 break;
             case 118:
             case BOTTOM_MIDDLE:
-                keyStates[2][1] = true;
+                x = 1;
+                y = 2;
                 break;
             case 98:
             case BOTTOM_RIGHT:
-                keyStates[2][2] = true;
+                x = 2;
+                y = 2;
                 break;
+            default:
+                return;
         }
+        if (activeNote[y][x] != -1) {
+            score += Math.abs(currentGrid[y][x]);
+            lastClaimedNote[y][x] = activeNote[y][x];
+            activeNote[y][x] = -1;
+            
+        }
+
+        keyStates[y][x] = true;
     }
 
     /**
@@ -211,44 +245,58 @@ public class Game extends Canvas implements CommandListener, Runnable {
      */
     protected void keyReleased(int keyCode) {
         
+        int x;
+        int y;
         switch (keyCode) {
             case 114:
             case TOP_LEFT:
-                keyStates[0][0] = false;
+                x = 0;
+                y = 0;
                 break;
             case 116:
             case TOP_MIDDLE:
-                keyStates[0][1] = false;
+                x = 1;
+                y = 0;
                 break;
             case 121:
             case TOP_RIGHT:
-                keyStates[0][2] = false;
+                x = 2;
+                y = 0;
                 break;
             case 102:
             case MIDDLE_LEFT:
-                keyStates[1][0] = false;
+                x = 0;
+                y = 1;
                 break;
             case 103:
             case MIDDLE_MIDDLE:
-                keyStates[1][1] = false;
+                x = 1;
+                y = 1;
                 break;
             case 104:
             case MIDDLE_RIGHT:
-                keyStates[1][2] = false;
+                x = 2;
+                y = 1;
                 break;
             case 99:
             case BOTTOM_LEFT:
-                keyStates[2][0] = false;
+                x = 0;
+                y = 2;
                 break;
             case 118:
             case BOTTOM_MIDDLE:
-                keyStates[2][1] = false;
+                x = 1;
+                y = 2;
                 break;
             case 98:
             case BOTTOM_RIGHT:
-                keyStates[2][2] = false;
+                x = 2;
+                y = 2;
                 break;
+            default:
+                return;
         }
+        keyStates[y][x] = false;
     }
 
     /**
@@ -312,11 +360,14 @@ public class Game extends Canvas implements CommandListener, Runnable {
                 for (int i = starteri; i < notes.size(); i++) {
                     int lastoobi = 0;
                     Note note = (Note) notes.elementAt(i);
-                    if (note.startTime < currentTime && currentTime < note.safetyTime) {
+                    if (note.startTime < currentTime && currentTime < note.safetyTime && lastClaimedNote[note.gridX][note.gridY] < i) {
                         if (currentTime < note.time) {
                             currentGrid[note.gridX][note.gridY] = (int) ( ((44 * (currentTime - note.startTime)) / (note.time - note.startTime)));
+                            activeNote[note.gridX][note.gridY] = i;
+
                         } else {
                             currentGrid[note.gridX][note.gridY] = (int) -( ((44 * (currentTime - note.time)) / (note.safetyTime - note.time)));
+                            activeNote[note.gridX][note.gridY] = i;
                         }
                     } else if (note.startTime > currentTime) {
                         break;
