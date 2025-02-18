@@ -27,6 +27,7 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
     boolean gameLoadAnimation = false;
     long stageOffset = 0;
     boolean loadGameNextFrame = false;
+    int cursorPos = 0;
     Thread runner;
     /**
      * constructor
@@ -88,13 +89,24 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
         
         g.setColor(preColor);
     }
+    public void drawMenu(Graphics g) {
+        g.drawImage(bg, 0, 0, 0);
+        g.setColor(0x87CEEB);
+        g.fillRoundRect(0, -10, getWidth(), 50, 10, 10);
+        g.setColor(0x448EE4);
+        g.drawRoundRect(2, (getHeight() - 50)/3, getWidth() - 4, (getHeight() - 50)/3, 20, 20);
+        g.drawRoundRect(2, 2 * (getHeight() - 50)/3 + 2, getWidth() - 4, (getHeight() - 50)/3, 20, 20);
+        g.drawRoundRect(2, (getHeight() - 50) + 4, getWidth() - 4, (getHeight() - 50)/3, 20, 20);
+        g.drawString("Select a song", (getWidth() - defaultFont.stringWidth("Select a song")) >>> 1, 10, 0);
+        
+    }
     /**
      * paint
      */
     public void paint(Graphics g) {
         g.setColor(0x000000); // Set color black
         g.fillRect(0, 0, this.getWidth(), this.getHeight()); // Draw that background 
-        
+
         if (loadGameNextFrame) {
             try {
                 runner.join();
@@ -104,6 +116,7 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
                 ex.printStackTrace();
             }
         }
+
         
         if (!introAnimationDone) {
             g.drawImage(bgBlur, 0, 0, 0);
@@ -120,8 +133,9 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
             }
             
         } else {
-            g.drawImage(bg, 0, 0, 0);
+            drawMenu(g);
         }
+
         
     }
     void drawGrid(Graphics g, float multiplier) {
@@ -134,8 +148,8 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
                 int minWidth = (this.getWidth() / 2 - 22);
                 int maxHeight = (initialHeight + (row * 50));
                 int minHeight = (this.getHeight()/ 2 - 22);
-                
-                g.drawRect((int)(multiplier * (maxWidth - minWidth) + minWidth), (int)(multiplier * (maxHeight - minHeight) + minHeight), 45, 45);
+//                g.drawRect((int)(multiplier * (maxWidth - minWidth) + minWidth), (int)(multiplier * (maxHeight - minHeight) + minHeight), 45, 45);
+                g.drawRoundRect((int)(multiplier * (maxWidth - minWidth) + minWidth), (int)(multiplier * (maxHeight - minHeight) + minHeight), 45, 45, (int)((1/multiplier)-1), (int)((1/multiplier)-1));
             }
         }
     }
