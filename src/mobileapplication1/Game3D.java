@@ -134,8 +134,9 @@ public class Game3D extends Canvas implements CommandListener, Runnable {
         int centerX = x+23;
         int centerY = y+23;
         // Multiply and then divide by 1024 to avoid floating point math
-        int realx = (int) (((size * 23) * (centerX - screenCenterX + 1))/ (1024)) + (screenCenterX); 
-        int realy = (int) (((size * 23) * (centerY - screenCenterY + 1))/ (1024)) + (screenCenterY);
+        // 44 * 23 is almost 1024 so then we can just divide by 1024 by bitshifting right 10 bits
+        int realx = (int) (((size * 23) * (centerX - screenCenterX + 1)) >> 10) + (screenCenterX); 
+        int realy = (int) (((size * 23) * (centerY - screenCenterY + 1)) >> 10) + (screenCenterY);
         
         int halfsize = size >> 1; // Effectively divides by two but faster
                 
