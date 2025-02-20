@@ -109,7 +109,12 @@ public class Game extends Canvas implements CommandListener, Runnable {
         
         g.drawImage(bg, 0, 0, 0);
 
+        
+        drawCurrentNotes(g);
+        drawDecayNotes(g);
+        drawPressedKeys(g);
         drawGrid(g);
+        
         g.setColor(0xFF0000);
 
 //        long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);
@@ -140,6 +145,42 @@ public class Game extends Canvas implements CommandListener, Runnable {
             }
         }
     }
+    void drawPressedKeys(Graphics g) {
+        int precolor = g.getColor();
+        g.setColor(0x0000FF);
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (keyStates[row][col])
+                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), 44, -1);
+            }
+        }
+        g.setColor(precolor);
+    }
+    void drawDecayNotes(Graphics g) {
+        int precolor = g.getColor();
+        g.setColor(0xFF00FF);
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (currentGrid[row][col] < 0)
+                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), 44+currentGrid[row][col], -1);
+            }
+        }
+        g.setColor(precolor);
+    }
+    void drawCurrentNotes(Graphics g) {
+        int precolor = g.getColor();
+        g.setColor(0xFF0000);
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (currentGrid[row][col] > 3) {
+                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col]-3, (0xFF7F7F));
+                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col], (0xFF0000));
+                }
+            }
+        }
+        g.setColor(precolor);
+    }
+    
     void drawGrid(Graphics g) {
         int precolor = g.getColor();
         g.setColor(0xFFFFFF);
@@ -149,28 +190,7 @@ public class Game extends Canvas implements CommandListener, Runnable {
                 g.drawRect(initialWidth + (col * 50), initialHeight + (row * 50), 45, 45);
             }
         }
-        g.setColor(0xFF0000);
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (currentGrid[row][col] > 0)
-                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col], -1);
-            }
-        }
-        g.setColor(0xFF00FF);
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (currentGrid[row][col] < 0)
-                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), 44+currentGrid[row][col], -1);
-            }
-        }
-        
-        g.setColor(0x0000FF);
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (keyStates[row][col])
-                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), 44, -1);
-            }
-        }
+
     }
     /**
      * Called when a key is pressed.
