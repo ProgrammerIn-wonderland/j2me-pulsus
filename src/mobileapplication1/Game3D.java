@@ -109,7 +109,7 @@ public class Game3D extends Canvas implements CommandListener, Runnable {
         
         g.drawImage(bg, 0, 0, 0);
 
-        
+        drawCurrentOutlineNotes(g);
         drawCurrentNotes(g);
         drawDecayNotes(g);
         drawPressedKeys(g);
@@ -179,15 +179,25 @@ public class Game3D extends Canvas implements CommandListener, Runnable {
         g.setColor(0xFF0000);
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                if (currentGrid[row][col] > 3) {
-                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col]-3, (0xFF7F7F));
+                if (currentGrid[row][col] > 0) {
                     drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col], (0xFF0000));
                 }
             }
         }
         g.setColor(precolor);
     }
-    
+    void drawCurrentOutlineNotes(Graphics g) {
+        int precolor = g.getColor();
+        g.setColor(0xFF0000);
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (currentGrid[row][col] > 3) {
+                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col]-3, (0xFF7F7F));
+                }
+            }
+        }
+        g.setColor(precolor);
+    }
     void drawGrid(Graphics g) {
         int precolor = g.getColor();
         g.setColor(0xFFFFFF);

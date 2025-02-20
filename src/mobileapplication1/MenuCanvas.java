@@ -110,7 +110,7 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
         if (loadGameNextFrame) {
             try {
                 runner.join();
-                this.display.setCurrent(new Game(bgBlur));
+                this.display.setCurrent(new Game3D(bgBlur));
                 return;
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
