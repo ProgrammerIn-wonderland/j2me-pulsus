@@ -8,6 +8,8 @@ package mobileapplication1;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Vector;
+import javax.microedition.lcdui.Graphics;
+import javax.microedition.lcdui.Image;
 
 /**
  *
@@ -119,5 +121,25 @@ public class Utils {
             c = (char) isr.read();
         }
         return fileContentBuffer.toString();
+    }
+    public static Image renderPerspective3DBackground(int width, int height) {
+        Image background = Image.createImage(width, height);
+        Graphics g = background.getGraphics();
+        g.setColor(0x1a1832);
+        g.fillRect(0, 0, width, height);
+        g.setColor(0x494255);
+        g.drawRect((((width - 155 )/ 2)), (((height - 155 )/ 2)), 155, 155);
+        g.drawRect((((width - 125 )/ 2)), (((height - 125 )/ 2)), 125, 125);
+        g.drawRect((((width - 85 )/ 2)), (((height - 85 )/ 2)), 85, 85);
+        
+        g.drawLine((((width - 155 )/ 2)) - 1000, (((height - 155 )/ 2)) - 1000, (((width - 85 )/ 2)), (((height - 85 )/ 2)));
+        g.drawLine((((width - 155 )/ 2)) + 155 + 1000, (((height - 155 )/ 2)) - 1000, (((width - 85 )/ 2)) + 85, (((height - 85 )/ 2)));
+        g.drawLine((((width - 155 )/ 2)) - 1000, (((height - 155 )/ 2)) + 155 + 1000, (((width - 85 )/ 2)), (((height - 85 )/ 2)) + 85);
+        g.drawLine((((width - 155 )/ 2)) + 155 + 1000, (((height - 155 )/ 2)) + 155 + 1000, (((width - 85 )/ 2)) + 85, (((height - 85 )/ 2)) + 85);
+        g.drawLine(width / 2, 0, width / 2, (((height - 85 )/ 2)));
+        g.drawLine(width / 2, height, width / 2, (((height - 85 )/ 2)) + 85);
+        g.drawLine(0, height / 2, (((width - 85 )/ 2)), (((height - 85 )/ 2)) + 43);
+        g.drawLine(width, height / 2, (((width - 85 )/ 2)) + 85, (((height - 85 )/ 2)) + 43);
+        return background;
     }
 }

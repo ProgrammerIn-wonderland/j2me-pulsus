@@ -15,7 +15,7 @@ import javax.microedition.lcdui.*;
  */
 public class MenuCanvas extends Canvas implements CommandListener, Runnable {
     Display display;
-    Image bgBlur;
+    Image perspective3DBg;
     Image bg;
     int xScreenCenter;
     int yScreenCenter;
@@ -40,7 +40,7 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
             initialHeight = (((this.getHeight() - 145 )/ 2) );
             initialWidth =  (((this.getWidth() - 145 )/ 2));
             this.display = display;
-            this.bgBlur = Image.createImage(getClass().getResourceAsStream("/bg-blur.png"));
+            this.perspective3DBg = Utils.renderPerspective3DBackground(getWidth(), getHeight());
             this.bg = Image.createImage(getClass().getResourceAsStream("/bg.png"));
             // Set up this canvas to listen to command events
             setCommandListener(this);
@@ -110,7 +110,7 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
         if (loadGameNextFrame) {
             try {
                 runner.join();
-                this.display.setCurrent(new Game3D(bgBlur));
+                this.display.setCurrent(new Game3D(this.perspective3DBg));
                 return;
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
@@ -119,14 +119,14 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
 
         
         if (!introAnimationDone) {
-            g.drawImage(bgBlur, 0, 0, 0);
+            g.drawImage(perspective3DBg, 0, 0, 0);
             drawDisclaimerText(g);
             return;
         }
         
         
         if (gameLoadAnimation && System.currentTimeMillis() - stageOffset > 0) {
-            g.drawImage(bgBlur, 0, 0, 0);
+            g.drawImage(perspective3DBg, 0, 0, 0);
             drawGrid(g, (System.currentTimeMillis() - stageOffset)/1000f);
             if ((System.currentTimeMillis() - stageOffset)/1000f > 1) {
                 loadGameNextFrame = true;
