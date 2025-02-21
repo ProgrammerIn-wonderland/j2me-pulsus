@@ -196,60 +196,12 @@ public class Game extends Canvas implements CommandListener, Runnable {
      * Called when a key is pressed.
      */
     protected void keyPressed(int keyCode) {
-        // You probably think I'm stupid for not just calculating the index by 
-        // division but remember that like the majority of phones didn't even support
-        // division in hardware. I'm avoiding division like an elementary schooler - Rafflesia
-        int x;
-        int y;
-        switch (keyCode) {
-            case 114:
-            case TOP_LEFT:
-                x = 0;
-                y = 0;
-                break;
-            case 116:
-            case TOP_MIDDLE:
-                x = 1;
-                y = 0;
-                break;
-            case 121:
-            case TOP_RIGHT:
-                x = 2;
-                y = 0;
-                break;
-            case 102:
-            case MIDDLE_LEFT:
-                x = 0;
-                y = 1;
-                break;
-            case 103:
-            case MIDDLE_MIDDLE:
-                x = 1;
-                y = 1;
-                break;
-            case 104:
-            case MIDDLE_RIGHT:
-                x = 2;
-                y = 1;
-                break;
-            case 99:
-            case BOTTOM_LEFT:
-                x = 0;
-                y = 2;
-                break;
-            case 118:
-            case BOTTOM_MIDDLE:
-                x = 1;
-                y = 2;
-                break;
-            case 98:
-            case BOTTOM_RIGHT:
-                x = 2;
-                y = 2;
-                break;
-            default:
-                return;
-        }
+        int[] keys = Utils.getKeyPosition(keyCode);
+        int x = keys[0];
+        int y = keys[1];
+        if (x == -1) 
+            return;
+        
         if (activeNote[y][x] != -1) {
             score += Math.abs(currentGrid[y][x]);
             lastClaimedNote[y][x] = activeNote[y][x];
@@ -264,58 +216,12 @@ public class Game extends Canvas implements CommandListener, Runnable {
      * Called when a key is released.
      */
     protected void keyReleased(int keyCode) {
+        int[] keys = Utils.getKeyPosition(keyCode);
+        int x = keys[0];
+        int y = keys[1];
+        if (x == -1) 
+            return;
         
-        int x;
-        int y;
-        switch (keyCode) {
-            case 114:
-            case TOP_LEFT:
-                x = 0;
-                y = 0;
-                break;
-            case 116:
-            case TOP_MIDDLE:
-                x = 1;
-                y = 0;
-                break;
-            case 121:
-            case TOP_RIGHT:
-                x = 2;
-                y = 0;
-                break;
-            case 102:
-            case MIDDLE_LEFT:
-                x = 0;
-                y = 1;
-                break;
-            case 103:
-            case MIDDLE_MIDDLE:
-                x = 1;
-                y = 1;
-                break;
-            case 104:
-            case MIDDLE_RIGHT:
-                x = 2;
-                y = 1;
-                break;
-            case 99:
-            case BOTTOM_LEFT:
-                x = 0;
-                y = 2;
-                break;
-            case 118:
-            case BOTTOM_MIDDLE:
-                x = 1;
-                y = 2;
-                break;
-            case 98:
-            case BOTTOM_RIGHT:
-                x = 2;
-                y = 2;
-                break;
-            default:
-                return;
-        }
         keyStates[y][x] = false;
     }
 

@@ -18,15 +18,6 @@ import javax.microedition.media.PlayerListener;
  * @author alice
  */
 public class Game3D extends Canvas implements CommandListener, Runnable {
-    final public int TOP_LEFT = 49;
-    final public int TOP_MIDDLE = 50;
-    final public int TOP_RIGHT = 51;
-    final public int MIDDLE_LEFT = 52;
-    final public int MIDDLE_MIDDLE = 53;
-    final public int MIDDLE_RIGHT = 54;
-    final public int BOTTOM_LEFT = 55;
-    final public int BOTTOM_MIDDLE = 56;
-    final public int BOTTOM_RIGHT = 57;
     Graphics graphics;
     int initialWidth;
     int initialHeight;
@@ -63,6 +54,8 @@ public class Game3D extends Canvas implements CommandListener, Runnable {
     Player player;
     long millioffset = 0;
     Image bg;
+    int screenCenterY = (getHeight() >> 1);
+    int screenCenterX = (getWidth() >> 1);
     /**
      * constructor
      */
@@ -72,8 +65,8 @@ public class Game3D extends Canvas implements CommandListener, Runnable {
             // Set up this canvas to listen to command events
             setCommandListener(this);
             
-            initialHeight = (((this.getHeight() - 145 )/ 2) );
-            initialWidth =  (((this.getWidth() - 145 )/ 2));
+            initialHeight = (((this.getHeight() - 145 ) >> 1) );
+            initialWidth =  (((this.getWidth() - 145 ) >> 1));
             
             // Add the Exit command
             // addCommand(new Command("Exit", Command.EXIT, 1));
@@ -83,6 +76,8 @@ public class Game3D extends Canvas implements CommandListener, Runnable {
             runner.start();
             notes = (new NoteLoader()).loadNotes("/default_chart.txt");
             
+            screenCenterY = (getHeight() >> 1);
+            screenCenterX = (getWidth() >> 1);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -124,8 +119,6 @@ public class Game3D extends Canvas implements CommandListener, Runnable {
     void drawSquare(Graphics g, int x, int y, int size, int color) {
         // Size is between 0-44 so we will use that to calculate its pos from center
         
-        int screenCenterY = (getHeight() >> 1);
-        int screenCenterX = (getWidth() >> 1);
         int precolor = g.getColor();
         if (color != -1) {
             g.setColor(color);
@@ -214,60 +207,12 @@ public class Game3D extends Canvas implements CommandListener, Runnable {
      * Called when a key is pressed.
      */
     protected void keyPressed(int keyCode) {
-        // You probably think I'm stupid for not just calculating the index by 
-        // division but remember that like the majority of phones didn't even support
-        // division in hardware. I'm avoiding division like an elementary schooler - Rafflesia
-        int x;
-        int y;
-        switch (keyCode) {
-            case 114:
-            case TOP_LEFT:
-                x = 0;
-                y = 0;
-                break;
-            case 116:
-            case TOP_MIDDLE:
-                x = 1;
-                y = 0;
-                break;
-            case 121:
-            case TOP_RIGHT:
-                x = 2;
-                y = 0;
-                break;
-            case 102:
-            case MIDDLE_LEFT:
-                x = 0;
-                y = 1;
-                break;
-            case 103:
-            case MIDDLE_MIDDLE:
-                x = 1;
-                y = 1;
-                break;
-            case 104:
-            case MIDDLE_RIGHT:
-                x = 2;
-                y = 1;
-                break;
-            case 99:
-            case BOTTOM_LEFT:
-                x = 0;
-                y = 2;
-                break;
-            case 118:
-            case BOTTOM_MIDDLE:
-                x = 1;
-                y = 2;
-                break;
-            case 98:
-            case BOTTOM_RIGHT:
-                x = 2;
-                y = 2;
-                break;
-            default:
-                return;
-        }
+        int[] keys = Utils.getKeyPosition(keyCode);
+        int x = keys[0];
+        int y = keys[1];
+        if (x == -1) 
+            return;
+        
         if (activeNote[y][x] != -1) {
             score += Math.abs(currentGrid[y][x]);
             lastClaimedNote[y][x] = activeNote[y][x];
@@ -282,58 +227,12 @@ public class Game3D extends Canvas implements CommandListener, Runnable {
      * Called when a key is released.
      */
     protected void keyReleased(int keyCode) {
+        int[] keys = Utils.getKeyPosition(keyCode);
+        int x = keys[0];
+        int y = keys[1];
+        if (x == -1) 
+            return;
         
-        int x;
-        int y;
-        switch (keyCode) {
-            case 114:
-            case TOP_LEFT:
-                x = 0;
-                y = 0;
-                break;
-            case 116:
-            case TOP_MIDDLE:
-                x = 1;
-                y = 0;
-                break;
-            case 121:
-            case TOP_RIGHT:
-                x = 2;
-                y = 0;
-                break;
-            case 102:
-            case MIDDLE_LEFT:
-                x = 0;
-                y = 1;
-                break;
-            case 103:
-            case MIDDLE_MIDDLE:
-                x = 1;
-                y = 1;
-                break;
-            case 104:
-            case MIDDLE_RIGHT:
-                x = 2;
-                y = 1;
-                break;
-            case 99:
-            case BOTTOM_LEFT:
-                x = 0;
-                y = 2;
-                break;
-            case 118:
-            case BOTTOM_MIDDLE:
-                x = 1;
-                y = 2;
-                break;
-            case 98:
-            case BOTTOM_RIGHT:
-                x = 2;
-                y = 2;
-                break;
-            default:
-                return;
-        }
         keyStates[y][x] = false;
     }
 
