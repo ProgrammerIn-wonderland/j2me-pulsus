@@ -7,6 +7,7 @@ package mobileapplication1;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Random;
 import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
@@ -128,7 +129,7 @@ public class Utils {
         g.setColor(0x1a1832);
         g.fillRect(0, 0, width, height);
         g.setColor(0x494255);
-        g.drawRect((((width - 155 )/ 2)), (((height - 155 )/ 2)), 155, 155);
+        g.drawRect((((width - 175 )/ 2)), (((height - 175 )/ 2)), 175, 175);
         g.drawRect((((width - 125 )/ 2)), (((height - 125 )/ 2)), 125, 125);
         g.drawRect((((width - 85 )/ 2)), (((height - 85 )/ 2)), 85, 85);
         
@@ -140,6 +141,26 @@ public class Utils {
         g.drawLine(width / 2, height, width / 2, (((height - 85 )/ 2)) + 85);
         g.drawLine(0, height / 2, (((width - 85 )/ 2)), (((height - 85 )/ 2)) + 43);
         g.drawLine(width, height / 2, (((width - 85 )/ 2)) + 85, (((height - 85 )/ 2)) + 43);
+        
+        int[] particlesData = new int[height * width];
+        Random rand = new Random();
+
+        int[] pastelColors = {0xFFa79be1, 0xFF8f92eb, 0xFFc99cdd, 0xFFc6d5d1};
+        // 50 random small pixels
+        for (int i = 0; i < 50; i++) {
+            particlesData[rand.nextInt(particlesData.length)] = pastelColors[rand.nextInt(pastelColors.length)];
+        }
+        
+        // 10 random big particles
+        for (int i = 0; i < 10; i++) {
+            int start = rand.nextInt(particlesData.length);
+            int color = pastelColors[rand.nextInt(pastelColors.length)];
+            particlesData[start] = color;
+            particlesData[start + 1] = color;
+            particlesData[start + width] = color;
+            particlesData[start + width + 1] = color;
+        }
+        g.drawRGB(particlesData, 0, width, 0, 0, width, height, true);
         return background;
     }
 }

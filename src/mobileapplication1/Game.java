@@ -7,6 +7,7 @@ package mobileapplication1;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 import java.util.Vector;
 import javax.microedition.lcdui.*;
 import javax.microedition.media.Manager;
@@ -27,6 +28,8 @@ public class Game extends Canvas implements CommandListener, Runnable {
     final public int BOTTOM_LEFT = 55;
     final public int BOTTOM_MIDDLE = 56;
     final public int BOTTOM_RIGHT = 57;
+    int[] pastelColors = {0xf0cdd5, 0xdfd6e4, 0xd4e7d3, 0xa89bd3, 0xd774cd, 0x7d3ac8, 0x6157ca, 0x8f94cc, 0xf0ced5};
+    
     Graphics graphics;
     int initialWidth;
     int initialHeight;
@@ -172,9 +175,8 @@ public class Game extends Canvas implements CommandListener, Runnable {
         g.setColor(0xFF0000);
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                if (currentGrid[row][col] > 3) {
-                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col]-3, (0xFF7F7F));
-                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col], (0xFF0000));
+                if (currentGrid[row][col] > 0) {
+                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col], pastelColors[col]);
                 }
             }
         }

@@ -7,6 +7,7 @@ package mobileapplication1;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 import java.util.Vector;
 import javax.microedition.lcdui.*;
 import javax.microedition.media.Manager;
@@ -20,6 +21,7 @@ import javax.microedition.media.PlayerListener;
 public class Game3D extends Game {
     int screenCenterY = (getHeight() >> 1);
     int screenCenterX = (getWidth() >> 1);
+    Random rand = new Random();
     /**
      * constructor
      */
@@ -73,8 +75,9 @@ public class Game3D extends Game {
         g.setColor(0xFF0000);
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                if (currentGrid[row][col] > 3) {
-                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col]-3, (0xFF7F7F));
+                if (currentGrid[row][col] > 4) {
+                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col]-2, pastelColors[col+1]);
+                    drawSquare(g, initialWidth + (col * 50), initialHeight + (row * 50), currentGrid[row][col]-4, pastelColors[col+2]);
                 }
             }
         }
