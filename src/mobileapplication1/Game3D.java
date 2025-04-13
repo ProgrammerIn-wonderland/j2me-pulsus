@@ -32,6 +32,7 @@ public class Game3D extends Game {
      * paint
      */
     public void paint(Graphics g) {
+        safeToWriteCalculations = false;
         g.setColor(0);
         
         g.drawImage(bg, 0, 0, 0);
@@ -47,6 +48,7 @@ public class Game3D extends Game {
 //        long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);
         long currentTime = ((System.currentTimeMillis() - millioffset));
         g.drawString("Score: " + Long.toString(score), 0, 0, Graphics.TOP | Graphics.LEFT);
+        safeToWriteCalculations = true;
     }
     void drawSquare(Graphics g, int x, int y, int size, int color) {
         // Size is between 0-44 so we will use that to calculate its pos from center

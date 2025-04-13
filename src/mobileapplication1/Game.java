@@ -5,6 +5,8 @@
  */
 package mobileapplication1;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
@@ -14,6 +16,7 @@ import javax.microedition.media.Manager;
 import javax.microedition.media.MediaException;
 import javax.microedition.media.Player;
 import javax.microedition.media.PlayerListener;
+import javax.microedition.media.protocol.DataSource;
 
 /**
  * @author alice
@@ -29,7 +32,8 @@ public class Game extends Canvas implements CommandListener, Runnable {
     final public int BOTTOM_MIDDLE = 56;
     final public int BOTTOM_RIGHT = 57;
     int[] pastelColors = {0xf0cdd5, 0xdfd6e4, 0xd4e7d3, 0xa89bd3, 0xd774cd, 0x7d3ac8, 0x6157ca, 0x8f94cc, 0xf0ced5};
-    
+    boolean safeToRender = true;
+    boolean safeToWriteCalculations = true;
     Graphics graphics;
     int initialWidth;
     int initialHeight;
@@ -39,6 +43,7 @@ public class Game extends Canvas implements CommandListener, Runnable {
         {false, false, false}
     };
     Vector notes = new Vector();
+    Player hitSound;
     
     
     // Each element here represents a square on the grid
@@ -78,9 +83,15 @@ public class Game extends Canvas implements CommandListener, Runnable {
             initialHeight = (((this.getHeight() - 145 )/ 2) );
             initialWidth =  (((this.getWidth() - 145 )/ 2));
             
+            InputStream is = getClass().getResourceAsStream("/hit.wav");
+            byte[] hitSample = new byte[25580];
+//            System.out.println(is.read(hitSample));
+            hitSound = Manager.createPlayer(is, "audio/mpeg"); // Use "audio/x-wav" for WAV files
+            hitSound.realize();
+            hitSound.prefetch();
             // Add the Exit command
             // addCommand(new Command("Exit", Command.EXIT, 1));
-            playMusic("/music.wav");
+            playMusic("/music.mp3");
             millioffset = System.currentTimeMillis();
             Thread runner = new Thread(this);
             runner.start();
@@ -105,7 +116,7 @@ public class Game extends Canvas implements CommandListener, Runnable {
      * paint
      */
     public void paint(Graphics g) {
-        
+        safeToWriteCalculations = false;
         
         this.graphics = g;
         g.setColor(0);
@@ -123,6 +134,7 @@ public class Game extends Canvas implements CommandListener, Runnable {
 //        long currentTime = ((player.getMediaTime() * 0x418937L) >>> 32);
         long currentTime = ((System.currentTimeMillis() - millioffset));
         g.drawString("Score: " + Long.toString(score), 0, 0, Graphics.TOP | Graphics.LEFT);
+        safeToWriteCalculations = true;
     }
     void drawSquare(Graphics g, int x, int y, int size, int color) {
 
@@ -210,6 +222,27 @@ public class Game extends Canvas implements CommandListener, Runnable {
             activeNote[y][x] = -1;
             
         }
+        try {
+            System.out.println("State: " + hitSound.getState());
+//            InputStream is = getClass().getResourceAsStream("/hit.wav");
+//            byte[] hitsound = new byte[is.available()];
+//            is.read(hitsound, 0, is.available());
+//            
+//            hitSound = Manager.createPlayer(new DataSource(is), "audio/x-wav");
+//            hitSound.realize();
+                
+//            hitSound.stop();
+//            hitSound.prefetch();
+            hitSound.setMediaTime(0);
+            
+            hitSound.start();
+//            hitSound.deallocate();
+//            hitSound.realize();
+            System.out.println("Hit sound played");
+        } catch (Exception ex) {
+            System.out.println("Somethings fuckkkkeddd");
+            ex.printStackTrace();
+        }
 
         keyStates[y][x] = true;
     }
@@ -284,6 +317,10 @@ public class Game extends Canvas implements CommandListener, Runnable {
                     millioffset = System.currentTimeMillis() - computedFixer;
                 }
                 lastMilisecond = computedFixer;
+                safeToRender = false;
+                while (!safeToWriteCalculations) {
+                    Thread.sleep(1);
+                }
                 resetGrid();
                 // End of comment this section out if your device supports accurate media time 
                 for (int i = starteri; i < notes.size(); i++) {
@@ -291,8 +328,13 @@ public class Game extends Canvas implements CommandListener, Runnable {
                     Note note = (Note) notes.elementAt(i);
                     if (note.startTime < currentTime && currentTime < note.safetyTime && lastClaimedNote[note.gridX][note.gridY] < i) {
                         if (currentTime < note.time) {
-                            currentGrid[note.gridX][note.gridY] = (int) ( ((44 * (currentTime - note.startTime)) / (note.time - note.startTime)));
-                            activeNote[note.gridX][note.gridY] = i;
+                            if (currentGrid[note.gridX][note.gridY] <= 0) {
+                                currentGrid[note.gridX][note.gridY] = (int) ( ((44 * (currentTime - note.startTime)) / (note.time - note.startTime)));
+                                activeNote[note.gridX][note.gridY] = i;
+                            } else {
+                                System.out.println("Weird fucked up thing with distance of " + ((note.time - note.startTime) - (currentTime - note.startTime)) );
+                            }
+
 
                         } else {
                             currentGrid[note.gridX][note.gridY] = (int) -( ((44 * (currentTime - note.time)) / (note.safetyTime - note.time)));
@@ -305,6 +347,7 @@ public class Game extends Canvas implements CommandListener, Runnable {
                     } // Work in progress optimization
                     starteri = lastoobi;
                 }
+                safeToRender = true;
                 Thread.sleep(16); // Adjust polling rate (16ms)
             } catch (InterruptedException e) {
                 e.printStackTrace();

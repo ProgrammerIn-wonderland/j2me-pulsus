@@ -45,7 +45,6 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
             // Set up this canvas to listen to command events
             setCommandListener(this);
             // Add the Exit command
-            addCommand(new Command("DEBUG main game", Command.OK, 0));
             addCommand(new Command("Exit", Command.EXIT, 1));
             milioffset = System.currentTimeMillis() + 1000;
             stageOffset = System.currentTimeMillis() + 1500;
@@ -67,7 +66,7 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
         }
         return buffer.toByteArray();
     }
-
+    
     void drawDisclaimerText(Graphics g) {
         int preColor = g.getColor();
         int offsetx = 0;
@@ -121,6 +120,8 @@ public class MenuCanvas extends Canvas implements CommandListener, Runnable {
         if (!introAnimationDone) {
             g.drawImage(perspective3DBg, 0, 0, 0);
             drawDisclaimerText(g);
+            gameLoadAnimation = true;
+            stageOffset = System.currentTimeMillis();
             return;
         }
         
